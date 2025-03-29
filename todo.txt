@@ -1,0 +1,9 @@
+TODO
+
+check timestamps more than one philo 
+change back form mac.c to usleep on linux
+
+check valgring, helgrind, fsanitize
+
+check if delay (uneven) necessary
+
