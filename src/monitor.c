@@ -31,9 +31,10 @@ void *monitor(void *data)
 		;
 	}
 
-	
+	// printf("MONITOR STARTS -----------\n");
 	while (!sim_finished(program))
 	{
+
 		i = 0;
 		//const check if elapsed time > time die for ALL philos
 		while (i < program->num_philos && !sim_finished(program))

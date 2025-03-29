@@ -125,12 +125,7 @@ int	init_program(t_program *program, char *argv[])
 		//free and exit
 		return (1);
 	}
-	// if (pthread_create(&program->monitor, NULL, &monitoring, (void *)program) != 0)
-	// {
-	// 	printf("Error creating thread\n");
-	// 	//destroy and free everything
-	// 	return ;
-	// }
+
 	if (argv[5])
 		program->times_to_eat = ft_atoi(argv[5]);
 	else

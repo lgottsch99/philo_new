@@ -1,9 +1,33 @@
 TODO
 
 check timestamps more than one philo 
+fix timestamp offset
 change back form mac.c to usleep on linux
+add write lock to stop anything being written after sb died
 
 check valgring, helgrind, fsanitize
 
 check if delay (uneven) necessary
+
+
+---- Program Design; -----
+
+main: 
+	checks input
+	init program + philos (but not yet creating threads)
+	decides which case (0, 1, more philos)
+	starts threads philos
+	starts monitor
+	waits for all (JOIN)
+	free
+
+each philo:
+	waits until start time
+	runs eat-sleep-think while sim not finished
+	stops itself when full, if yes returns
+
+monitor:
+	waits until all threads running
+	endlessly (as long as sim not finished by all philos being full) 
+		checks if any philo should die, if yes sets sim to finished
 

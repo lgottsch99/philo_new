@@ -6,7 +6,7 @@
 /*   By: Watanudon <Watanudon@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 11:23:14 by lgottsch          #+#    #+#             */
-/*   Updated: 2025/03/29 20:37:18 by Watanudon        ###   ########.fr       */
+/*   Updated: 2025/03/29 21:37:37 by Watanudon        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ int	main(int argc, char *argv[])
 			return (1);
 		}
 
-		//3. start sim 
+		//3. start sim (create threads)
 		start_sim(&program);
 		//(check if number to eat = 0, philo num = 1, else start creating threads + monitor, sync beginning, run, join everyone)
 

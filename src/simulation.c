@@ -33,7 +33,6 @@ int	init_threads(t_program *program)
 }
 
 
-
 void	start_sim(t_program *program)
 { printf("start simulation\n");
 /*
@@ -87,7 +86,6 @@ for (int y = 0; y < program->num_philos; y++)
 printf("ALL PHILOS FULL\n");
 set_bool(&program->program_mutex, true, &program->end_sim); //need to set this so monitor also stops
 pthread_join(program->monitor, NULL);
-
 
 
 	return ;

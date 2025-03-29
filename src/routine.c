@@ -23,7 +23,7 @@ void	think(t_philo *philo)//TODO
 	if (philo->program_ptr->num_philos % 2 == 0) //even num: system already fair
 		return ;
 	else
-		usleep(20); //add smallll delay to give other philo chance to grab fork
+		usleep(1000); //add smallll delay to give other philo chance to grab fork
 	return ;
 	}
 
@@ -97,7 +97,7 @@ void	*routine(void *data)
 		// printf("in routine loop\n");
 		//check if eaten enough?
 		if (philo->full)//TODO thread safe
-			break ; 
+			break ;
 		//Eat
 		eat(philo);
 		
