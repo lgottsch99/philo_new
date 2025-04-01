@@ -1,19 +1,31 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   simulation.c                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: lgottsch <lgottsch@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/04/01 15:03:20 by lgottsch          #+#    #+#             */
+/*   Updated: 2025/04/01 18:29:12 by lgottsch         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
 #include "../includes/philos.h"
 
-void	single_philo(t_program *program)
+static int	single_philo(t_program *program)
 {
 	if (pthread_create(&program->philos[0]->thread, NULL, &lonely, (void *)program->philos[0]) != 0)
 	{
 		printf("Error creating thread\n");
 		//destroy and free everything
-		return;
+		return (1);
 	}
+	return (0);
 }
 
-int	init_threads(t_program *program)
+static int	init_threads(t_program *program)
 {
-	printf("in init philo threads\n");
+	// printf("in init philo threads\n");
 	int	i;
 
 	i = 0;
@@ -34,60 +46,60 @@ int	init_threads(t_program *program)
 
 
 void	start_sim(t_program *program)
-{ printf("start simulation\n");
-/*
-check params:
+{
+	// printf("start simulation\n");
+	int	y;
+	int error;
 
-times to eat = 0 ? return
-philo = 1? just run once and let him die
-else
-start philo threads + monitor
-sync start
-
-join all
-*/
-if (program->times_to_eat == 0)
-	return ;
-else if (program->num_philos == 1)
-	single_philo(program);
-	//TODO handle 1 philo (just let him die)
-else
-{	//create philo threads
-	if (init_threads(program) != 0)
-	{
-		//free everything ?
+	error = 0;
+	y = 0;
+	if (program->times_to_eat == 0)
 		return ;
+	else if (program->num_philos == 1)
+		error = single_philo(program);
+	else
+	{	//create philo threads
+		if (init_threads(program) != 0)
+		{
+			error = 1;
+			return ;
+		}
 	}
-}
-// create monitor thread
-pthread_create(&program->monitor, NULL, &monitor, program); //todo secure
+	if (error != 1)
+	{
+		// create monitor thread
+		if (pthread_create(&program->monitor, NULL, &monitor, program) != 0) //todo secure
+			return ;
+	
+		//get sim start time
+		if (handle_mutex(&program->program_mutex, LOCK) != 0)
+			return ;
+		program->start_time = get_current_time(); //maybe need to lock by mutex?
+		if (handle_mutex(&program->program_mutex, UNLOCK) != 0)
+			return ;
 
+		while (y < program->num_philos)
+		{
+			if (pthread_join(program->philos[y]->thread, NULL) != 0)
+				return ;
+			y++;
+		}
+	
 
-//get sim start time
-program->start_time = get_time_ms(); //maybe need to lock by mutex?
-printf("start time : %ld\n\n", program->start_time);
+		//reached here? all threads finished//full
+		// printf("ALL PHILOS FULL\n");
+		set_bool(&program->program_mutex, true, &program->end_sim); //need to set this so monitor stops
+		if (pthread_join(program->monitor, NULL) != 0)
+			return ;
+	
+	}
 
-for (int i = 0; i < program->num_philos; i++)
-{
-	print_philo(program->philos[i]);
-}
+	// printf("start time : %ld\n\n", program->start_time);
 
-//now all threads ready
-// printf("setting start bool \n");
-// set_bool(&program->program_mutex, true, &program->all_threads_ready); //start flag for sim to run
-// set_all_ready(program);
-//join all philos
-for (int y = 0; y < program->num_philos; y++)
-{
-	pthread_join(program->philos[y]->thread, NULL);
-}
-
-//reached here? all threads finished//full
-printf("ALL PHILOS FULL\n");
-set_bool(&program->program_mutex, true, &program->end_sim); //need to set this so monitor also stops
-pthread_join(program->monitor, NULL);
-
+	// for (int i = 0; i < program->num_philos; i++)
+	// {
+	// 	print_philo(program->philos[i]);
+	// }
 
 	return ;
-
 }

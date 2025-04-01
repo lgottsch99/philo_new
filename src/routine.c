@@ -1,66 +1,67 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   routine.c                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: lgottsch <lgottsch@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/04/01 15:03:01 by lgottsch          #+#    #+#             */
+/*   Updated: 2025/04/01 18:31:04 by lgottsch         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../includes/philos.h"
 
-
-// void		update_last_meal_to_now(t_philo *philo)
-// {
-// 	long	current_time;
-// 	long	program_start;
-// 	long	new_end_meal;
-	
-// 	current_time = get_time_ms();
-// 	program_start = get_long(&philo->program_ptr->program_mutex, &philo->program_ptr->start_time);
-// 	// calc current time since start of program
-// 	new_end_meal = current_time;
-// 	//update in philo struct
-
-// }
-
-void	think(t_philo *philo)//TODO 
+void	think(t_philo *philo)
 {
-	log_status(THINKING, philo);
-
-	//check if even necessary
-	if (philo->program_ptr->num_philos % 2 == 0) //even num: system already fair
+	if (log_status(THINKING, philo) != 0)
+	{
+		set_bool(&philo->program_ptr->program_mutex, true, &philo->program_ptr->end_sim);
 		return ;
-	else
-		usleep(1000); //add smallll delay to give other philo chance to grab fork
-	return ;
 	}
+	// if (philo->program_ptr->num_philos % 2 == 0)
+	// 	return ;
+	// else
+	// {
+	// 	// if (philo->num % 2 != 0)
+	// 	usleep(100);
+	// }
+	return ;
+}
 
-/*
-	1 grab forks
-
-	2 log status
-	update last meal time
-	countn meals
-	evtl bool full?
-
-	3 release forks
-*/
-void	eat(t_philo *philo)
+int	eat(t_philo *philo)
 {
 	int	time_to_eat; 
 
 	time_to_eat = get_int(&philo->program_ptr->program_mutex, &philo->program_ptr->time_eat);
+	if (time_to_eat == -9999)
+		return (1);
+
+	// printf("time to eat: %i\n", time_to_eat);
 	//1
-	lock_forks(philo);
+	if (lock_forks(philo) != 0)
+		return (1);
 	//2
 	//update last meal time
-	set_long(&philo->philo_mutex, get_time_ms(), &philo->end_last_meal);//thread safe
-	
+	if (set_long(&philo->philo_mutex, get_time_ms(), &philo->end_last_meal) != 0)//thread safe
+		return (1);
 	philo->times_eaten++;
-	log_status(EATING, philo);
-	// precise_usleep(philo->program_ptr->time_eat, philo->program_ptr);
-	// usleep(time_to_eat);
-	my_sleep(time_to_eat);
+	if (log_status(EATING, philo) != 0)
+		return (1);
+
+	usleep(time_to_eat * 1000); //convert milli to micros.
 
 	//check if philo full
 	if (philo->program_ptr->times_to_eat > 0 && philo->times_eaten == philo->program_ptr->times_to_eat)
-		set_bool(&philo->philo_mutex, true, &philo->full);
+	{
+		if (set_bool(&philo->philo_mutex, true, &philo->full) != 0)
+			return (1);
+	}
 	//
-	unlock_forks(philo);
+	if (unlock_forks(philo) != 0)
+		return (1);
+	return (0);
 }
-
 
 void	*routine(void *data)
 {
@@ -71,22 +72,24 @@ void	*routine(void *data)
 	philo = (t_philo *)data;
 
 	time_sleep = get_int(&philo->program_ptr->program_mutex, &philo->program_ptr->time_sleep);
-
+	if (time_sleep == -9999)
+		return (NULL);
 // wait until all philos ready
-	printf("%i waiting for start\n", philo->num);
+	// printf("%i waiting for start\n", philo->num);
 	time = get_time_ms();
 	while (time <= philo->philo_start)
 	{
-		usleep(100);
+		ft_usleep(100);
 		time = get_time_ms();
 	}
-
-	printf("%i starting\n", philo->num);
+	// printf("%i starting\n", philo->num);
 	//sync w monitor ->increase a program counter
-	add_program_counter(&philo->program_ptr->program_mutex, &philo->program_ptr->running_philos);
+	if (add_program_counter(&philo->program_ptr->program_mutex, &philo->program_ptr->running_philos) != 0)
+		return (NULL);
 
-	//set last meal time
-	set_long(&philo->philo_mutex, get_time_ms(), &philo->end_last_meal);//thread safe
+	//set first last meal time
+	if (set_long(&philo->philo_mutex, get_time_ms(), &philo->end_last_meal) != 0)
+		return (NULL);
 
 	//if uneven num philos desync tiny bit (bc otehrwise not fair, depending on OS)
 	// desync_philos(philo);
@@ -99,16 +102,19 @@ void	*routine(void *data)
 		if (philo->full)//TODO thread safe
 			break ;
 		//Eat
-		eat(philo);
+		if (eat(philo) != 0)
+			break ;
 		
 		//sleep
-		log_status(SLEEPING, philo);
-		// precise_usleep(philo->program_ptr->time_sleep, philo->program_ptr);//maybe change time into philo (but constants no race conditions!)
-		// usleep(time_sleep);
-		my_sleep(time_sleep);
-
+		if (!sim_finished(philo->program_ptr))
+		{
+			if (log_status(SLEEPING, philo) != 0)
+				break ;
+			usleep(time_sleep * 1000);
+		}
 		//think
-		think(philo);
+		if (!sim_finished(philo->program_ptr))
+			think(philo);
 
 	}
 	return (NULL);

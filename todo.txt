@@ -1,11 +1,8 @@
-TODO
+TODO							
 
-check timestamps more than one philo 
-fix timestamp offset
-change back form mac.c to usleep on linux
-add write lock to stop anything being written after sb died
+error returns
 
-check valgring, helgrind, fsanitize
+check valgring, helgrind, fsanitize OK
 
 check if delay (uneven) necessary
 

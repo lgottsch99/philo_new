@@ -1,3 +1,14 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   get_set.c                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: lgottsch <lgottsch@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/04/01 15:02:28 by lgottsch          #+#    #+#             */
+/*   Updated: 2025/04/01 17:59:01 by lgottsch         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
 #include "../includes/philos.h"
 
@@ -6,17 +17,22 @@ int	get_int(pthread_mutex_t *mutex, int *value)
 {
 	int	ret;
 
-	handle_mutex(mutex, LOCK);
+	if (handle_mutex(mutex, LOCK) != 0)
+		return (-9999);
 	ret = *value;
-	handle_mutex(mutex, UNLOCK);
+	if (handle_mutex(mutex, UNLOCK) != 0)
+		return (-9999);
 	return (ret);
 }
 
-void	set_int(pthread_mutex_t *mutex, int value, int *dest)
+int	set_int(pthread_mutex_t *mutex, int value, int *dest)
 {
-	handle_mutex(mutex, LOCK);
+	if (handle_mutex(mutex, LOCK) != 0)
+		return (1);
 	*dest = value;
-	handle_mutex(mutex, UNLOCK);	
+	if (handle_mutex(mutex, UNLOCK) != 0)
+		return (1);
+	return (0);	
 }
 
 bool	get_bool(pthread_mutex_t *mutex, bool *value)
@@ -29,32 +45,43 @@ bool	get_bool(pthread_mutex_t *mutex, bool *value)
 	return (ret);
 }
 
-void	set_bool(pthread_mutex_t *mutex, bool value, bool *dest)
+int	set_bool(pthread_mutex_t *mutex, bool value, bool *dest)
 {
-	handle_mutex(mutex, LOCK);
+	if (handle_mutex(mutex, LOCK) != 0)
+		return (1);
 	*dest = value;
-	handle_mutex(mutex, UNLOCK);	
+	if (handle_mutex(mutex, UNLOCK) != 0)
+		return (1);
+	return (0);
 }
 
 long	get_long(pthread_mutex_t *mutex, long *value)
 {
 	long	ret;
 
-	handle_mutex(mutex, LOCK);
+	if (handle_mutex(mutex, LOCK) != 0)
+		return (-9999);
 	ret = *value;
-	handle_mutex(mutex, UNLOCK);
+	if (handle_mutex(mutex, UNLOCK) != 0)
+		return (-9999);
 	return (ret);
 }
 
-void	set_long(pthread_mutex_t *mutex, long value, long *dest)
+int	set_long(pthread_mutex_t *mutex, long value, long *dest)
 {
-	handle_mutex(mutex, LOCK);
+	if (handle_mutex(mutex, LOCK) != 0)
+		return (1); 
 	*dest = value;
-	handle_mutex(mutex, UNLOCK);	
+	if (handle_mutex(mutex, UNLOCK) != 0)
+		return (1);
+	return (0);
 }
 
 //wrapper to clearly see what happens
 bool sim_finished(t_program *program)
 {
-	return (get_bool(&program->program_mutex, &program->end_sim));
+	bool	ret;
+
+	ret = get_bool(&program->program_mutex, &program->end_sim);
+	return (ret);
 }

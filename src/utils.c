@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: Watanudon <Watanudon@student.42.fr>        +#+  +:+       +#+        */
+/*   By: lgottsch <lgottsch@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 15:20:55 by lgottsch          #+#    #+#             */
-/*   Updated: 2025/03/29 20:23:49 by Watanudon        ###   ########.fr       */
+/*   Updated: 2025/04/01 18:18:41 by lgottsch         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,46 +61,52 @@ int	mutex_error(int status)
 }
 
 //all mutex fts return 0 if ok, else error 
-int	handle_mutex(pthread_mutex_t *mutex, t_opcode opcode)
+int	handle_mutex(pthread_mutex_t *mutex, t_opcode code)
 {
 	int 	stat;
 
 	stat = 0;
-	if (opcode == INIT)
+	if (code == INIT)
 		stat = mutex_error(pthread_mutex_init(mutex, NULL));
-	else if (opcode == LOCK)
+	else if (code == LOCK)
 		stat = mutex_error(pthread_mutex_lock(mutex));
-	else if (opcode == UNLOCK)
+	else if (code == UNLOCK)
 		stat = mutex_error(pthread_mutex_unlock(mutex));
-	else if (opcode == DESTROY)
+	else if (code == DESTROY)
 		stat = mutex_error(pthread_mutex_destroy(mutex));
 	else
-		printf("wrong opcode for mutex\n");
+		printf("wrong code for mutex\n");
 	return (stat);
 }
 
-void	log_status(t_philo_state status, t_philo *philo)
+int	log_status(t_philo_state status, t_philo *philo)
 {
 	long	time;
+	long	program_start;
 
 	time = get_time_ms();
-	if (philo->full) // thread safe?
-		return ;
-	
-	handle_mutex(&philo->program_ptr->write_mutex, LOCK);
-	
-	if ((status == TAKE_FORK_1 || status == TAKE_FORK_2) && !sim_finished(philo->program_ptr))
-		printf("%ld %i has taken a fork\n", time - philo->program_ptr->start_time, philo->num);
-	else if (status == EATING && !sim_finished(philo->program_ptr))
-		printf("%ld %i is eating\n", time - philo->program_ptr->start_time, philo->num);
-	else if (status == SLEEPING && !sim_finished(philo->program_ptr))
-		printf("%ld %i is sleeping\n", time - philo->program_ptr->start_time, philo->num);
-	else if (status == THINKING)
-		printf("%ld %i is thinking\n", time - philo->program_ptr->start_time, philo->num);
-	else if (status == DEAD)
-		printf("%ld %i died\n", time - philo->program_ptr->start_time, philo->num);
+	if (get_bool(&philo->philo_mutex, &philo->full)) // thread safe?
+		return (0);
 
-	handle_mutex(&philo->program_ptr->write_mutex, UNLOCK);
+	program_start = get_long(&philo->program_ptr->program_mutex, &philo->program_ptr->start_time);
+
+	if (handle_mutex(&philo->program_ptr->write_mutex, LOCK) != 0)
+		return (1);
+
+	if ((status == TAKE_FORK_1 || status == TAKE_FORK_2) && !sim_finished(philo->program_ptr))
+		printf("%ld %i has taken a fork\n", time - program_start - OFFSET_TIME, philo->num);
+	else if (status == EATING && !sim_finished(philo->program_ptr))
+		printf("%ld %i is eating\n", time - program_start - OFFSET_TIME, philo->num);
+	else if (status == SLEEPING && !sim_finished(philo->program_ptr))
+		printf("%ld %i is sleeping\n", time - program_start - OFFSET_TIME, philo->num);
+	else if (status == THINKING)
+		printf("%ld %i is thinking\n", time - program_start - OFFSET_TIME, philo->num);
+	else if (status == DEAD)
+		printf("%ld %i died\n", time - program_start - OFFSET_TIME, philo->num);
+
+	if (handle_mutex(&philo->program_ptr->write_mutex, UNLOCK) != 0)
+		return (1);
+	return (0);
 }
 
 void	print_philo(t_philo *philo)//rm

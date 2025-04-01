@@ -3,17 +3,17 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: Watanudon <Watanudon@student.42.fr>        +#+  +:+       +#+         #
+#    By: lgottsch <lgottsch@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/03/18 11:25:47 by lgottsch          #+#    #+#              #
-#    Updated: 2025/03/29 20:45:31 by Watanudon        ###   ########.fr        #
+#    Updated: 2025/04/01 16:08:23 by lgottsch         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = philo
 
 CC = cc
-CFLAGS = -Wall -Wextra -Werror #-fsanitize=thread
+CFLAGS = -Wall -Wextra -Werror # -fsanitize=thread
 
 SRC_FOLDER = ./src/
 SRC = $(addprefix $(SRC_FOLDER), main.c input.c utils.c init.c get_set.c simulation.c sync_utils.c \

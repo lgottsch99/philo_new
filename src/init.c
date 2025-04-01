@@ -1,4 +1,14 @@
-//HEADER
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   init.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: lgottsch <lgottsch@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/04/01 15:02:35 by lgottsch          #+#    #+#             */
+/*   Updated: 2025/04/01 17:13:53 by lgottsch         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
 #include "../includes/philos.h"
 
@@ -11,10 +21,10 @@ static t_philo	*malloc_philo(int i, t_program *program)
 	if (!philo)
 		return (NULL);
 	// thread     started after init
-	philo->num = i + 1; //todo: check if ok
+	philo->num = i + 1;
 	philo->times_eaten = 0;
 	philo->full = false;
-	philo->philo_start = program->start_time + 2000; //enough time?
+	philo->philo_start = program->start_time + OFFSET_TIME;
 	philo->mutex_own_fork = &program->fork_mutexes[i];
 	if (i + 1 < program->num_philos)
 		philo->mutex_fork_right = &program->fork_mutexes[i + 1];
@@ -49,12 +59,17 @@ static t_philo	**init_philos(t_program *program)
 		array[i] = malloc_philo(i, program);
 		if (!array[i])
 		{
-			//free all before
-			// free_philos(array, i);
+			while(i >= 0)
+			{
+				free_philo(array[i]);
+				i--;
+			}
+			free(array);
+			array = NULL;
 			printf("Malloc Philo error\n");
 			return (NULL);
 		}
-		printf("created philo no %i\n", array[i]->num);
+		// printf("created philo no %i\n", array[i]->num);
 		// print_philo(array[i]);
 		i++;
 	}
@@ -72,7 +87,7 @@ pthread_mutex_t	*init_fork_mutex(int num_philos)
 
 	mutexes = NULL;
 	mutexes = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t) * num_philos);
-	if (! mutexes)
+	if (!mutexes)
 		return (NULL);
 	tmp = mutexes;
 	i = 0;
@@ -82,7 +97,9 @@ pthread_mutex_t	*init_fork_mutex(int num_philos)
 		// if (pthread_mutex_init(&mutexes[i], NULL) == -1)
 		if (handle_mutex(tmp, INIT) != 0)
 		{
-			// free everything
+			free(mutexes);
+			mutexes = NULL;
+			tmp = NULL;
 			return (NULL);
 		}
 		i++;
@@ -92,10 +109,9 @@ pthread_mutex_t	*init_fork_mutex(int num_philos)
 	return (mutexes);
 }
 
-
 int	init_program(t_program *program, char *argv[])
 {
-	printf("init program\n");
+	// printf("init program\n");
 
 	program->num_philos = ft_atoi(argv[1]);
 	// printf("num philos: %i\n", program->num_philos);
@@ -114,17 +130,11 @@ int	init_program(t_program *program, char *argv[])
 
 	program->fork_mutexes = init_fork_mutex(program->num_philos);
 	if (!program->fork_mutexes)
-	{
-		//free and exit
 		return (1);
-	}
 
 	program->philos = init_philos(program);
 	if (!program->philos)
-	{
-		//free and exit
 		return (1);
-	}
 
 	if (argv[5])
 		program->times_to_eat = ft_atoi(argv[5]);
@@ -132,5 +142,7 @@ int	init_program(t_program *program, char *argv[])
 		program->times_to_eat = -1;
 	program->time_die = ft_atoi(argv[2]);
 	program->running_philos = 0;
+
+
 	return (0);
 }

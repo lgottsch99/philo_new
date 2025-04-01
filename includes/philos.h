@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   philos.h                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: Watanudon <Watanudon@student.42.fr>        +#+  +:+       +#+        */
+/*   By: lgottsch <lgottsch@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 11:23:03 by lgottsch          #+#    #+#             */
-/*   Updated: 2025/03/29 20:57:25 by Watanudon        ###   ########.fr       */
+/*   Updated: 2025/04/01 18:16:38 by lgottsch         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,8 @@
 #include <sys/time.h> //gettimeofday
 #include <stdbool.h>
 
+//time to wait  before starting sim, to allow all philos to be created
+# define OFFSET_TIME 2000
 
 typedef struct s_program t_program;
 
@@ -54,13 +56,6 @@ typedef struct s_philo
 	int				times_eaten;
 	bool			full;
 	long			philo_start;
-	// int				time_die;
-	// int				time_eat;
-	// int				time_sleep;
-	// int				dead;//1 if philo died
-	// int				times_eaten;
-	// int				*dead_flag; //pointer to dead flag
-	// long			start_time; //of program
 	long			end_last_meal;
 	pthread_mutex_t	*mutex_own_fork;
 	pthread_mutex_t	*mutex_fork_right;
@@ -83,7 +78,7 @@ typedef struct s_program
 	int					times_to_eat; //-1 if not given as cl arg
 	bool				all_threads_ready; //sync philos
 	pthread_mutex_t		program_mutex; //avoid races while reading from program struct
-	pthread_mutex_t		write_mutex; //used????
+	pthread_mutex_t		write_mutex; //used???? yes
 	// int					*dead_flag;//0 if all alive, 1 once sb died
 	long				start_time; //saving start time of prorgram in millisec
 	// long				philo_start;
@@ -100,56 +95,60 @@ typedef struct s_program
 
 //main
 void	*routine(void *arg);
-int	init_program(t_program *program, char *argv[]);
+int		init_program(t_program *program, char *argv[]);
 
 //input
-int	check_input_valid(int argc, char *argv[]);
+int		check_input_valid(int argc, char *argv[]);
 
 //simulation
 void	start_sim(t_program *program);
 
 //sim helers
-void	lock_forks(t_philo *philo);
-void	unlock_forks(t_philo *philo);
+int		lock_forks(t_philo *philo);
+int		unlock_forks(t_philo *philo);
 
 //monitor
 void *monitor(void *data);
 
 //routine
 void	think(t_philo *philo);//TODO 
-void	eat(t_philo *philo);
+int		eat(t_philo *philo);
 void	*routine(void *data);
 
 //utils
 int		ft_atoi(const char *nptr);
 long	get_time_ms(void);
 int	handle_mutex(pthread_mutex_t *mutex, t_opcode opcode);
-void	log_status(t_philo_state status, t_philo *philo);
+int		log_status(t_philo_state status, t_philo *philo);
 
 
 //sync utils
 void		wait_all_ready(t_program *program); //spinlock, runnning until bool set to true
 void	precise_usleep(long time, t_program *program);
-void add_program_counter(pthread_mutex_t *mutex, int *counter);
+int		add_program_counter(pthread_mutex_t *mutex, int *counter);
 bool	all_threads_running(t_program *program);//not same as oceano, check if ok
+int	ft_usleep(size_t milliseconds);
+size_t	get_current_time(void);
 
 //get set
-int	get_int(pthread_mutex_t *mutex, int *value);
-void	set_int(pthread_mutex_t *mutex, int value, int *dest);
+int		get_int(pthread_mutex_t *mutex, int *value);
+int		set_int(pthread_mutex_t *mutex, int value, int *dest);
 bool	get_bool(pthread_mutex_t *mutex, bool *value);
-void	set_bool(pthread_mutex_t *mutex, bool value, bool *dest);
-bool sim_finished(t_program *program);
-void	set_long(pthread_mutex_t *mutex, long value, long *dest);
+int		set_bool(pthread_mutex_t *mutex, bool value, bool *dest);
+bool 	sim_finished(t_program *program);
+int		set_long(pthread_mutex_t *mutex, long value, long *dest);
 long	get_long(pthread_mutex_t *mutex, long *value);
 
 void	print_philo(t_philo *philo);//rm
 
 //lonely 
-void *lonely(void *data);
+void 	*lonely(void *data);
 
 
 //free
 void	free_program(t_program *program);
+void	free_philo(t_philo *philo);
+
 
 //mac
 void my_sleep(int milliseconds);

@@ -1,4 +1,14 @@
-//HEADER
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   monitor.c                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: lgottsch <lgottsch@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/04/01 15:02:53 by lgottsch          #+#    #+#             */
+/*   Updated: 2025/04/01 18:31:15 by lgottsch         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
 #include "../includes/philos.h"
 
@@ -26,10 +36,10 @@ void *monitor(void *data)
 
 	program = (t_program *)data;
 	//sync: all philos should run before start to monitor
-	while (!all_threads_running(program))//spinlock
-	{
+	while (!all_threads_running(program))//spinlock OK
 		;
-	}
+	
+	// set_long(&program->program_mutex, get_time_ms(), &program->start_time);
 
 	// printf("MONITOR STARTS -----------\n");
 	while (!sim_finished(program))
@@ -47,6 +57,7 @@ void *monitor(void *data)
 			}
 			i++;
 		}
+		// usleep (1000);
 	}
 	return (NULL);
 }
