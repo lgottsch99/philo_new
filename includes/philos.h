@@ -6,9 +6,12 @@
 /*   By: lgottsch <lgottsch@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 11:23:03 by lgottsch          #+#    #+#             */
-/*   Updated: 2025/04/01 18:16:38 by lgottsch         ###   ########.fr       */
+/*   Updated: 2025/04/01 18:59:58 by lgottsch         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+#ifndef PHILOS_H
+#define PHILOS_H
 
 #include <pthread.h>
 #include <stdio.h>	//printf
@@ -152,3 +155,6 @@ void	free_philo(t_philo *philo);
 
 //mac
 void my_sleep(int milliseconds);
+
+
+#endif
