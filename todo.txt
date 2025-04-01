@@ -1,10 +1,18 @@
 TODO							
 
-error returns
-
+error returns OK
 check valgring, helgrind, fsanitize OK
 
-check if delay (uneven) necessary
+check if delay (uneven) necessary yes
+
+delay and calc custom thinking time:
+different if total  num philos even /odd
+use 
+even: 	time_to_think = (philo->table->time_to_eat
+			- philo->table->time_to_sleep);
+
+odd : time_to_think = (philo->table->time_to_eat * 2
+			- philo->table->time_to_sleep);
 
 
 ---- Program Design; -----
@@ -27,4 +35,51 @@ monitor:
 	waits until all threads running
 	endlessly (as long as sim not finished by all philos being full) 
 		checks if any philo should die, if yes sets sim to finished
+
+
+------------------------------------------------------
+TESTING
+
+no one should die:
+
+5 800 200 200
+
+5 600 150 150
+
+4 410 200 200       OK
+
+100 800 200 200
+
+105 800 200 200
+
+200 800 200 200
+
+5 800 200 200 7
+no one should die, simulation should stop after 7 eats
+
+4 410 200 200 10
+no one should die, simulation should stop after 10 eats
+
+
+
+one should die: 
+
+1 800 200 200
+
+4 310 200 100
+
+4 200 205 200
+
+
+
+-5 600 200 200
+should error and not run (no crashing)
+4 -5 200 200
+should error and not run (no crashing)
+4 600 -5 200
+should error and not run (no crashing)
+4 600 200 -5
+should error and not run (no crashing)
+4 600 200 200 -5
+should error and not run (no crashing)
 
