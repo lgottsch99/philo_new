@@ -17,6 +17,14 @@ odd : time_to_think = (philo->table->time_to_eat * 2
 
 --tool=drd check
 
+
+I HAVE: 
+fork assign: own plus next
+	even pick up left first , uneven right
+	forced thinking for odd nr philos
+	synced start 
+	
+
 ---- Program Design; -----
 
 main: 

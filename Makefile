@@ -6,7 +6,7 @@
 #    By: lgottsch <lgottsch@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/03/18 11:25:47 by lgottsch          #+#    #+#              #
-#    Updated: 2025/04/01 16:08:23 by lgottsch         ###   ########.fr        #
+#    Updated: 2025/04/03 20:58:15 by lgottsch         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -17,7 +17,7 @@ CFLAGS = -Wall -Wextra -Werror # -fsanitize=thread
 
 SRC_FOLDER = ./src/
 SRC = $(addprefix $(SRC_FOLDER), main.c input.c utils.c init.c get_set.c simulation.c sync_utils.c \
-	simulation_helpers.c routine.c monitor.c lonely.c mac.c free.c)
+	simulation_helpers.c routine.c monitor.c lonely.c free.c)
 
 
 OBJ = $(SRC:.c=.o)
