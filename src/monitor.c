@@ -6,7 +6,7 @@
 /*   By: lgottsch <lgottsch@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 15:02:53 by lgottsch          #+#    #+#             */
-/*   Updated: 2025/04/03 18:14:27 by lgottsch         ###   ########.fr       */
+/*   Updated: 2025/04/03 19:12:50 by lgottsch         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,7 @@ void *monitor(void *data)
 	while (!all_threads_running(program))//spinlock OK
 		;
 	
-	precise_usleep(100); //add some delay to prevent philo death at 0
+	precise_usleep(100);
 	// printf("MONITOR STARTS -----------\n");
 	while (!sim_finished(program))
 	{

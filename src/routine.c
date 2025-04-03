@@ -6,7 +6,7 @@
 /*   By: lgottsch <lgottsch@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 15:03:01 by lgottsch          #+#    #+#             */
-/*   Updated: 2025/04/03 18:14:28 by lgottsch         ###   ########.fr       */
+/*   Updated: 2025/04/03 20:16:16 by lgottsch         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,18 +14,25 @@
 
 void	think(t_philo *philo)
 {
+	long	min_think;
+
+	min_think = 0;
 	if (log_status(THINKING, philo) != 0)
 	{
 		set_bool(&philo->program_ptr->program_mutex, true, &philo->program_ptr->end_sim);
 		return ;
 	}
-	// if (philo->program_ptr->num_philos % 2 == 0)
-	// 	return ;
-	// else
-	// {
-	// 	// if (philo->num % 2 != 0)
-	// 	usleep(100);
-	// }
+	//desync for fairness
+	if (philo->program_ptr->num_philos % 2 == 0)//EVEN
+		return ;
+
+	else //UNEVEN
+	{	
+		min_think = (get_int(&philo->program_ptr->program_mutex, &philo->program_ptr->time_eat) * 2) - get_int(&philo->program_ptr->program_mutex, &philo->program_ptr->time_sleep);
+		if (min_think < 0)
+			min_think = 0;
+		precise_usleep((min_think * 0.5) * 1000); //think AT LEAST a bit to desync
+	}
 	return ;
 }
 
@@ -51,9 +58,9 @@ int	eat(t_philo *philo)
 
 	precise_usleep(time_to_eat * 1000); //convert milli to micros.
 
-	//update last meal time
-	if (set_long(&philo->philo_mutex, get_time_ms(), &philo->end_last_meal) != 0)//thread safe
-		return (1);
+	// //update last meal time
+	// if (set_long(&philo->philo_mutex, get_time_ms(), &philo->end_last_meal) != 0)//thread safe
+	// 	return (1);
 	//check if philo full
 	if (philo->program_ptr->times_to_eat > 0 && philo->times_eaten == philo->program_ptr->times_to_eat)
 	{

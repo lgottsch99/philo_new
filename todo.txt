@@ -15,7 +15,7 @@ odd : time_to_think = (philo->table->time_to_eat * 2
 			- philo->table->time_to_sleep);
 
 
-check start time
+--tool=drd check
 
 ---- Program Design; -----
 
@@ -46,15 +46,15 @@ no one should die:
 
 5 800 200 200		OK
 
-6 800 200 200 		OK
+6 800 200 200 		
 
-5 600 150 150		OK
+5 600 150 150		
 
-4 410 200 200       OK
+4 410 200 200     OK
 
-100 800 200 200
+100 800 200 200			KO ( 50 ok but 60 die) (100 805 200 200 OK -> issue slow system?)
 
-105 800 200 200
+105 800 200 200		OK
 
 200 800 200 200
 
@@ -70,9 +70,9 @@ one should die:
 
 1 800 200 200
 
-4 310 200 100
+4 310 200 100		OK
 
-4 200 205 200
+4 200 205 200		OK
 
 
 
