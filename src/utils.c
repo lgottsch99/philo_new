@@ -6,7 +6,7 @@
 /*   By: lgottsch <lgottsch@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 15:20:55 by lgottsch          #+#    #+#             */
-/*   Updated: 2025/04/01 18:18:41 by lgottsch         ###   ########.fr       */
+/*   Updated: 2025/04/03 18:11:44 by lgottsch         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,26 +83,28 @@ int	log_status(t_philo_state status, t_philo *philo)
 {
 	long	time;
 	long	program_start;
+	long	logtime;
 
-	time = get_time_ms();
 	if (get_bool(&philo->philo_mutex, &philo->full)) // thread safe?
 		return (0);
-
+	
+	time = get_time_ms();
 	program_start = get_long(&philo->program_ptr->program_mutex, &philo->program_ptr->start_time);
+	logtime = time - program_start; // - OFFSET_TIME;
 
 	if (handle_mutex(&philo->program_ptr->write_mutex, LOCK) != 0)
 		return (1);
 
 	if ((status == TAKE_FORK_1 || status == TAKE_FORK_2) && !sim_finished(philo->program_ptr))
-		printf("%ld %i has taken a fork\n", time - program_start - OFFSET_TIME, philo->num);
+		printf("%ld %i has taken a fork\n", logtime, philo->num);
 	else if (status == EATING && !sim_finished(philo->program_ptr))
-		printf("%ld %i is eating\n", time - program_start - OFFSET_TIME, philo->num);
+		printf("%ld %i is eating\n", logtime, philo->num);
 	else if (status == SLEEPING && !sim_finished(philo->program_ptr))
-		printf("%ld %i is sleeping\n", time - program_start - OFFSET_TIME, philo->num);
+		printf("%ld %i is sleeping\n", logtime, philo->num);
 	else if (status == THINKING)
-		printf("%ld %i is thinking\n", time - program_start - OFFSET_TIME, philo->num);
+		printf("%ld %i is thinking\n", logtime, philo->num);
 	else if (status == DEAD)
-		printf("%ld %i died\n", time - program_start - OFFSET_TIME, philo->num);
+		printf("%ld %i died\n", logtime, philo->num);
 
 	if (handle_mutex(&philo->program_ptr->write_mutex, UNLOCK) != 0)
 		return (1);

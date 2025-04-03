@@ -6,7 +6,7 @@
 /*   By: lgottsch <lgottsch@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 11:23:03 by lgottsch          #+#    #+#             */
-/*   Updated: 2025/04/01 18:59:58 by lgottsch         ###   ########.fr       */
+/*   Updated: 2025/04/03 17:40:48 by lgottsch         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -127,11 +127,14 @@ int		log_status(t_philo_state status, t_philo *philo);
 
 //sync utils
 void		wait_all_ready(t_program *program); //spinlock, runnning until bool set to true
-void	precise_usleep(long time, t_program *program);
+// void	precise_usleep(long time, t_program *program);
 int		add_program_counter(pthread_mutex_t *mutex, int *counter);
 bool	all_threads_running(t_program *program);//not same as oceano, check if ok
-int	ft_usleep(size_t milliseconds);
-size_t	get_current_time(void);
+// int	ft_usleep(size_t milliseconds);
+// size_t	get_current_time(void);
+
+void precise_usleep(long usec);
+
 
 //get set
 int		get_int(pthread_mutex_t *mutex, int *value);

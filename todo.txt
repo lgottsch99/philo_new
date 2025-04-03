@@ -15,6 +15,8 @@ odd : time_to_think = (philo->table->time_to_eat * 2
 			- philo->table->time_to_sleep);
 
 
+check start time
+
 ---- Program Design; -----
 
 main: 
@@ -42,9 +44,11 @@ TESTING
 
 no one should die:
 
-5 800 200 200
+5 800 200 200		OK
 
-5 600 150 150
+6 800 200 200 		OK
+
+5 600 150 150		OK
 
 4 410 200 200       OK
 

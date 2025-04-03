@@ -6,7 +6,7 @@
 /*   By: lgottsch <lgottsch@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 15:03:20 by lgottsch          #+#    #+#             */
-/*   Updated: 2025/04/01 18:29:12 by lgottsch         ###   ########.fr       */
+/*   Updated: 2025/04/03 16:59:57 by lgottsch         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,7 +74,7 @@ void	start_sim(t_program *program)
 		//get sim start time
 		if (handle_mutex(&program->program_mutex, LOCK) != 0)
 			return ;
-		program->start_time = get_current_time(); //maybe need to lock by mutex?
+		program->start_time = get_time_ms(); //maybe need to lock by mutex?
 		if (handle_mutex(&program->program_mutex, UNLOCK) != 0)
 			return ;
 

@@ -6,7 +6,7 @@
 /*   By: lgottsch <lgottsch@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 15:03:01 by lgottsch          #+#    #+#             */
-/*   Updated: 2025/04/01 18:55:58 by lgottsch         ###   ########.fr       */
+/*   Updated: 2025/04/03 18:14:28 by lgottsch         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,8 +49,11 @@ int	eat(t_philo *philo)
 	if (log_status(EATING, philo) != 0)
 		return (1);
 
-	usleep(time_to_eat * 1000); //convert milli to micros.
+	precise_usleep(time_to_eat * 1000); //convert milli to micros.
 
+	//update last meal time
+	if (set_long(&philo->philo_mutex, get_time_ms(), &philo->end_last_meal) != 0)//thread safe
+		return (1);
 	//check if philo full
 	if (philo->program_ptr->times_to_eat > 0 && philo->times_eaten == philo->program_ptr->times_to_eat)
 	{
@@ -66,7 +69,7 @@ int	eat(t_philo *philo)
 void	*routine(void *data)
 {
 	t_philo *philo;
-	long	time;
+	// long	time;
 	int	time_sleep;
 
 	philo = (t_philo *)data;
@@ -75,17 +78,25 @@ void	*routine(void *data)
 	if (time_sleep == -9999)
 		return (NULL);
 // wait until all philos ready
-	// printf("%i waiting for start\n", philo->num);
-	time = get_time_ms();
-	while (time <= philo->philo_start)
-	{
-		ft_usleep(100);
-		time = get_time_ms();
-	}
-	// printf("%i starting\n", philo->num);
-	//sync w monitor ->increase a program counter
+	printf("%i waiting for start\n", philo->num);
+	// time = get_time_ms();
+	// while (time <= philo->philo_start)
+	// {
+	// 	precise_usleep(50);
+	// 	time = get_time_ms();
+	// }
+
+		//sync w monitor ->increase a program counter
 	if (add_program_counter(&philo->program_ptr->program_mutex, &philo->program_ptr->running_philos) != 0)
 		return (NULL);
+	//spinlock until all ready
+	while (!all_threads_running(philo->program_ptr))//spinlock OK
+		;
+		
+	// printf("%i starting\n", philo->num);
+	//sync w monitor ->increase a program counter
+	// if (add_program_counter(&philo->program_ptr->program_mutex, &philo->program_ptr->running_philos) != 0)
+	// 	return (NULL);
 
 	//set first last meal time
 	if (set_long(&philo->philo_mutex, get_time_ms(), &philo->end_last_meal) != 0)
@@ -110,7 +121,7 @@ void	*routine(void *data)
 		{
 			if (log_status(SLEEPING, philo) != 0)
 				break ;
-			usleep(time_sleep * 1000);
+			precise_usleep(time_sleep * 1000);
 		}
 		//think
 		if (!sim_finished(philo->program_ptr))

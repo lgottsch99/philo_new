@@ -6,7 +6,7 @@
 /*   By: lgottsch <lgottsch@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 15:03:26 by lgottsch          #+#    #+#             */
-/*   Updated: 2025/04/01 18:16:50 by lgottsch         ###   ########.fr       */
+/*   Updated: 2025/04/03 17:02:45 by lgottsch         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,24 +38,25 @@ int add_program_counter(pthread_mutex_t *mutex, int *counter)
 	return (0);
 }
 
-// Improved version of sleep function
-int	ft_usleep(size_t milliseconds)
-{
-	size_t	start;
 
-	start = get_current_time();
-	while ((get_current_time() - start) < milliseconds)
-		usleep(500);
-	return (0);
+static long get_elapsed_time_microseconds(struct timeval start, struct timeval end)
+{
+    return (end.tv_sec - start.tv_sec) * 1000000L + (end.tv_usec - start.tv_usec);
 }
 
-// Gets the current time in milliseconds
+void precise_usleep(long usec) {
+    struct timeval start, current;
+    long elapsed;
+    long rem;
 
-size_t	get_current_time(void)
-{
-	struct timeval	time;
+    gettimeofday(&start, NULL);
+    do {
+        gettimeofday(&current, NULL);
+        elapsed = get_elapsed_time_microseconds(start, current);
+        rem = usec - elapsed;
 
-	if (gettimeofday(&time, NULL) == -1)
-		write(2, "gettimeofday() error\n", 22);
-	return (time.tv_sec * 1000 + time.tv_usec / 1000);
+        if (rem > 1000) 
+            usleep(rem / 2);
+        
+    } while (elapsed < usec);
 }
