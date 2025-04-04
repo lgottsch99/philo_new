@@ -6,13 +6,14 @@
 /*   By: lgottsch <lgottsch@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 15:03:26 by lgottsch          #+#    #+#             */
-/*   Updated: 2025/04/04 16:37:41 by lgottsch         ###   ########.fr       */
+/*   Updated: 2025/04/04 17:20:50 by lgottsch         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/philos.h"
 
-/* makes sim wait until all philos ready to run
+/* 
+	makes sim wait until all philos ready to run
 */
 bool	all_threads_running(t_program *program)
 {
@@ -28,7 +29,7 @@ bool	all_threads_running(t_program *program)
 }
 
 /*
-adds to a var that keeps track of threads that are ready to run
+	adds to a var that keeps track of threads that are ready to run
 */
 int add_program_counter(pthread_mutex_t *mutex, int *counter)
 {
@@ -41,8 +42,8 @@ int add_program_counter(pthread_mutex_t *mutex, int *counter)
 }
 
 /*
-L at end of number: type safety
-L ensures math is done using longs, prevents int overflow
+	L at end of number: type safety
+	L ensures math is done using longs, prevents int overflow
 */
 static long get_elapsed_time_microseconds(struct timeval start, struct timeval end)
 {
@@ -53,8 +54,8 @@ static long get_elapsed_time_microseconds(struct timeval start, struct timeval e
 }
 
 /*
-more precise than normal usleep
-mix between spinlock and sleep
+	more precise than normal usleep
+	mix between spinlock and sleep
 */
 void precise_usleep(long microsec)
 {
@@ -76,7 +77,7 @@ void precise_usleep(long microsec)
 }
 
 /*
-wrapper for readability
+	wrapper for readability
 */
 bool sim_finished(t_program *program)
 {
