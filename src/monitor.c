@@ -6,47 +6,49 @@
 /*   By: lgottsch <lgottsch@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 15:02:53 by lgottsch          #+#    #+#             */
-/*   Updated: 2025/04/04 15:12:50 by lgottsch         ###   ########.fr       */
+/*   Updated: 2025/04/04 16:52:05 by lgottsch         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/philos.h"
 
-//check if time last meal to now > time die (but maybe hilo is full)
+/*
+checks if philo should die based on time gone by since beginning of last meal.
+If a philo is full it just returns (philo itself stops when full).
+*/
 bool	philo_dead(t_philo *philo)
 {
 	long	time_gone_by;
 
-	if (get_bool(&philo->philo_mutex, &philo->full)) //philo is full and iis gonna end on its own 
+	if (get_bool(&philo->philo_mutex, &philo->full))
 		return (false);
-
-	time_gone_by = get_time_ms() - get_long(&philo->philo_mutex, &philo->end_last_meal);
+	time_gone_by = get_time_ms() - get_long(&philo->philo_mutex,
+			&philo->end_last_meal);
 	if (time_gone_by > philo->program_ptr->time_die)
 		return (true);
 	else
 		return (false);
-
 }
 
+/*
+Monitoring thread to constantly check if any philo surpassed time to die.
+Only starts at start of sim (when all philos are ready). Stops in case
+philo dead or all full.
+*/
 void *monitor(void *data)
 {
 	t_program	*program;
 	int			i;
 
 	program = (t_program *)data;
-	//sync: all philos should run before start to monitor
-	while (!all_threads_running(program))//spinlock OK
+	while (!all_threads_running(program))
 		;
-	
-	precise_usleep(1000);
-	// printf("MONITOR STARTS -----------\n");
+	precise_usleep(1000); //needed? test
 	while (!sim_finished(program))
 	{
 		i = 0;
-		//const check if elapsed time > time die for ALL philos
 		while (i < program->num_philos && !sim_finished(program))
 		{
-			//check if died
 			if (philo_dead(program->philos[i]))
 			{
 				set_bool(&program->program_mutex, true, &program->end_sim);
@@ -54,7 +56,7 @@ void *monitor(void *data)
 			}
 			i++;
 		}
-		precise_usleep(1000);
+		precise_usleep(1000); //needed? test
 	}
 	return (NULL);
 }

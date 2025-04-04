@@ -6,7 +6,7 @@
 /*   By: lgottsch <lgottsch@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 14:51:55 by lgottsch          #+#    #+#             */
-/*   Updated: 2025/03/28 16:44:52 by lgottsch         ###   ########.fr       */
+/*   Updated: 2025/04/04 16:40:13 by lgottsch         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,10 +32,6 @@ static int	check_digits(char *arg)
 	return (0);
 }
 
-///all numeric (and > 0 except arg nr 5) args
-	//for each arg:
-		//check if only digits
-		//if yes check atoi > 0? (excepils.c ./src/free.c ./src/init.c ./src/routine.c ./src/monitor.c -o philo
 int	check_input_valid(int argc, char *argv[])
 {
 	int	i;
@@ -52,7 +48,6 @@ int	check_input_valid(int argc, char *argv[])
 		{
 			printf("Num Philos needs to be > 0!\n");
 			return (1);
-
 		}
 		if (check_digits(argv[i]) == 1)
 		{

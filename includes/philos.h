@@ -6,7 +6,7 @@
 /*   By: lgottsch <lgottsch@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 11:23:03 by lgottsch          #+#    #+#             */
-/*   Updated: 2025/04/04 15:38:19 by lgottsch         ###   ########.fr       */
+/*   Updated: 2025/04/04 17:08:43 by lgottsch         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,37 +109,30 @@ int		check_input_valid(int argc, char *argv[]);
 //simulation
 void	start_sim(t_program *program);
 
-//sim helers
+//sim helpers
 int		lock_forks(t_philo *philo);
 int		unlock_forks(t_philo *philo);
+int		log_status(t_philo_state status, t_philo *philo);
 
 //monitor
-void *monitor(void *data);
+void	*monitor(void *data);
 
 //routine
-void	think(t_philo *philo, int i);
-int		eat(t_philo *philo);
 void	*routine(void *data);
 
 //utils
 int		ft_atoi(const char *nptr);
 long	get_time_ms(void);
 int	handle_mutex(pthread_mutex_t *mutex, t_opcode opcode);
-int		log_status(t_philo_state status, t_philo *philo);
 
 
 //sync utils
-void		wait_all_ready(t_program *program); //spinlock, runnning until bool set to true
-// void	precise_usleep(long time, t_program *program);
 int		add_program_counter(pthread_mutex_t *mutex, int *counter);
 bool	all_threads_running(t_program *program);//not same as oceano, check if ok
-// int	ft_usleep(size_t milliseconds);
-// size_t	get_current_time(void);
+void	precise_usleep(long usec);
+bool	sim_finished(t_program *program);
 
-void precise_usleep(long usec);
-
-
-//get set
+//getters setters
 int		get_int(pthread_mutex_t *mutex, int *value);
 int		set_int(pthread_mutex_t *mutex, int value, int *dest);
 bool	get_bool(pthread_mutex_t *mutex, bool *value);
@@ -152,7 +145,6 @@ void	print_philo(t_philo *philo);//rm
 
 //lonely 
 void 	*lonely(void *data);
-
 
 //free
 void	free_program(t_program *program);

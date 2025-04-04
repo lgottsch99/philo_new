@@ -6,7 +6,7 @@
 /*   By: lgottsch <lgottsch@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 15:20:55 by lgottsch          #+#    #+#             */
-/*   Updated: 2025/04/03 18:11:44 by lgottsch         ###   ########.fr       */
+/*   Updated: 2025/04/04 17:06:45 by lgottsch         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,9 @@ int	ft_atoi(const char *nptr)
 	}
 	return (num * neg);
 }
-
+/*
+	Returns current time in millisec
+*/
 long	get_time_ms()
 {
 	struct timeval time;
@@ -51,7 +53,7 @@ long	get_time_ms()
 	return (millisec);
 }
 
-
+//wrapper to handle mutex error
 int	mutex_error(int status)
 {
 	if (status == 0)
@@ -79,39 +81,10 @@ int	handle_mutex(pthread_mutex_t *mutex, t_opcode code)
 	return (stat);
 }
 
-int	log_status(t_philo_state status, t_philo *philo)
-{
-	long	time;
-	long	program_start;
-	long	logtime;
-
-	if (get_bool(&philo->philo_mutex, &philo->full)) // thread safe?
-		return (0);
-	
-	time = get_time_ms();
-	program_start = get_long(&philo->program_ptr->program_mutex, &philo->program_ptr->start_time);
-	logtime = time - program_start; // - OFFSET_TIME;
-
-	if (handle_mutex(&philo->program_ptr->write_mutex, LOCK) != 0)
-		return (1);
-
-	if ((status == TAKE_FORK_1 || status == TAKE_FORK_2) && !sim_finished(philo->program_ptr))
-		printf("%ld %i has taken a fork\n", logtime, philo->num);
-	else if (status == EATING && !sim_finished(philo->program_ptr))
-		printf("%ld %i is eating\n", logtime, philo->num);
-	else if (status == SLEEPING && !sim_finished(philo->program_ptr))
-		printf("%ld %i is sleeping\n", logtime, philo->num);
-	else if (status == THINKING)
-		printf("%ld %i is thinking\n", logtime, philo->num);
-	else if (status == DEAD)
-		printf("%ld %i died\n", logtime, philo->num);
-
-	if (handle_mutex(&philo->program_ptr->write_mutex, UNLOCK) != 0)
-		return (1);
-	return (0);
-}
-
-void	print_philo(t_philo *philo)//rm
+/*
+	Used for debugging 
+*/
+void	print_philo(t_philo *philo)
 {
 	printf("num: %i\n", philo->num);
 	printf("times eaten: %i\n", philo->times_eaten);
@@ -119,7 +92,7 @@ void	print_philo(t_philo *philo)//rm
 	printf("philo start : %ld\n", philo->philo_start);
 	printf("mutex own fork: %p\n", (void *)philo->mutex_own_fork);
 	printf("mutex right fork: %p\n", (void *)philo->mutex_fork_right);
-	printf("pprogram ptr: %p\n", philo->program_ptr);
+	printf("program ptr: %p\n", philo->program_ptr);
 	printf("\n");
 }
 

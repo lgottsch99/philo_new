@@ -1,22 +1,10 @@
 TODO							
 
-error returns OK
-check valgring, helgrind, fsanitize OK
-
-check if delay (uneven) necessary yes
-
-delay and calc custom thinking time:
-different if total  num philos even /odd
-use 
-even: 	time_to_think = (philo->table->time_to_eat
-			- philo->table->time_to_sleep);
-
-odd : time_to_think = (philo->table->time_to_eat * 2
-			- philo->table->time_to_sleep);
+error returns
+check valgring, helgrind, fsanitize
 
 
 --tool=drd check
-
 
 I HAVE: 
 fork assign: own plus next
@@ -52,17 +40,17 @@ TESTING
 
 no one should die:
 
-5 800 200 200		OK
+5 800 200 200		
 
 6 800 200 200 		
 
 5 600 150 150		
 
-4 410 200 200     OK
+4 410 200 200     
 
-100 800 200 200			KO ( 50 ok but 60 die) (100 805 200 200 OK -> issue slow system?)
+100 800 200 200		
 
-105 800 200 200		OK
+105 800 200 200		
 
 200 800 200 200
 
@@ -78,9 +66,9 @@ one should die:
 
 1 800 200 200
 
-4 310 200 100		OK
+4 310 200 100	why???
 
-4 200 205 200		OK
+4 200 205 200	
 
 
 
