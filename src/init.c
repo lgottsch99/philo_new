@@ -6,13 +6,13 @@
 /*   By: lgottsch <lgottsch@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 15:02:35 by lgottsch          #+#    #+#             */
-/*   Updated: 2025/04/01 17:13:53 by lgottsch         ###   ########.fr       */
+/*   Updated: 2025/04/04 14:16:26 by lgottsch         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/philos.h"
 
-static t_philo	*malloc_philo(int i, t_program *program)
+static t_philo	*malloc_philo(int i, t_program *program, char *argv[])
 {
 	// printf("in malloc philo\n");
 	t_philo	*philo;
@@ -32,13 +32,15 @@ static t_philo	*malloc_philo(int i, t_program *program)
 		philo->mutex_fork_right = &program->fork_mutexes[0];
 	handle_mutex(&philo->philo_mutex, INIT);
 	philo->program_ptr = program;
-
+	philo->time_die = ft_atoi(argv[2]);
+	philo->time_eat = ft_atoi(argv[3]);
+	philo->time_sleep = ft_atoi(argv[4]);
 	return (philo);
 }
 
 
 
-static t_philo	**init_philos(t_program *program)
+static t_philo	**init_philos(t_program *program, char *argv[])
 {
 	// printf("in init structs\n");
 	t_philo **array;
@@ -56,7 +58,7 @@ static t_philo	**init_philos(t_program *program)
 		//malloc each philo struct
 	while (i < program->num_philos)
 	{
-		array[i] = malloc_philo(i, program);
+		array[i] = malloc_philo(i, program, argv);
 		if (!array[i])
 		{
 			while(i >= 0)
@@ -132,7 +134,7 @@ int	init_program(t_program *program, char *argv[])
 	if (!program->fork_mutexes)
 		return (1);
 
-	program->philos = init_philos(program);
+	program->philos = init_philos(program, argv);
 	if (!program->philos)
 		return (1);
 

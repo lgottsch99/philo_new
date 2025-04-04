@@ -6,7 +6,7 @@
 /*   By: lgottsch <lgottsch@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/18 11:23:03 by lgottsch          #+#    #+#             */
-/*   Updated: 2025/04/03 17:40:48 by lgottsch         ###   ########.fr       */
+/*   Updated: 2025/04/04 15:38:19 by lgottsch         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,6 +64,13 @@ typedef struct s_philo
 	pthread_mutex_t	*mutex_fork_right;
 	pthread_mutex_t	philo_mutex; //for races with monitor
 	t_program		*program_ptr;
+
+	int				time_die;
+	int				time_eat;
+	int				time_sleep;
+
+
+
 	// pthread_mutex_t	mutex_times_eaten; //to lock times eaten variable
 	// pthread_mutex_t	mutex_end_last_meal;
 	// pthread_mutex_t	*write_lock;
@@ -82,17 +89,13 @@ typedef struct s_program
 	bool				all_threads_ready; //sync philos
 	pthread_mutex_t		program_mutex; //avoid races while reading from program struct
 	pthread_mutex_t		write_mutex; //used???? yes
-	// int					*dead_flag;//0 if all alive, 1 once sb died
 	long				start_time; //saving start time of prorgram in millisec
 	// long				philo_start;
 	pthread_mutex_t		*fork_mutexes; //as many as forks, match by index?
 	t_philo 			**philos;//array of ptrs to philo structs
 	pthread_t			monitor;
 	int					running_philos;
-	// pthread_mutex_t		write_lock;
-	// pthread_mutex_t		mutex_dead_flag;
-	// pthread_t			monitor;
-	// int					time_die;
+	
 }	t_program;
 
 
@@ -114,7 +117,7 @@ int		unlock_forks(t_philo *philo);
 void *monitor(void *data);
 
 //routine
-void	think(t_philo *philo);//TODO 
+void	think(t_philo *philo, int i);
 int		eat(t_philo *philo);
 void	*routine(void *data);
 
