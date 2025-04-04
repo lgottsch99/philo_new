@@ -1,17 +1,11 @@
 TODO							
 
-error returns
-check valgring, helgrind, fsanitize
-
+error returns 									OK BUT TEST
+check valgrind, helgrind, fsanitize. drd?		TEST
+test again										
 
 --tool=drd check
 
-I HAVE: 
-fork assign: own plus next
-	even pick up left first , uneven right
-	forced thinking for odd nr philos
-	synced start 
-	
 
 ---- Program Design; -----
 

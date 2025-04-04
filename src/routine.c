@@ -6,11 +6,27 @@
 /*   By: lgottsch <lgottsch@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 15:03:01 by lgottsch          #+#    #+#             */
-/*   Updated: 2025/04/04 17:08:17 by lgottsch         ###   ########.fr       */
+/*   Updated: 2025/04/04 17:19:16 by lgottsch         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/philos.h"
+
+/*
+	calculates time since last meal in thread and error safe way
+*/
+static long	get_time_passed(t_philo *philo)
+{
+	long	time_passed_since_last_meal;
+
+	time_passed_since_last_meal = 0;
+	if (handle_mutex(&philo->philo_mutex, LOCK) != 0)
+		return (-999);
+	time_passed_since_last_meal = (get_time_ms() - philo->end_last_meal);
+	if (handle_mutex(&philo->philo_mutex, UNLOCK) != 0)
+		return (-999);
+	return (time_passed_since_last_meal);
+}
 
 /*
 	calculates the time a philo should think dynamically,
@@ -32,9 +48,9 @@ static void	think(t_philo *philo, int i)
 			return ;
 		}
 	}
-	handle_mutex(&philo->philo_mutex, LOCK); //todo safe
-	time_passed_since_last_meal = (get_time_ms() - philo->end_last_meal);
-	handle_mutex(&philo->philo_mutex, UNLOCK); //to do safe
+	time_passed_since_last_meal = get_time_passed(philo);
+	if (time_passed_since_last_meal == -999)
+		return ;
 	min_think = (philo->time_die - time_passed_since_last_meal
 			- philo->time_eat) / 2;
 	if (min_think < 0)
